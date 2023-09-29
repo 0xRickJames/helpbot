@@ -12,27 +12,29 @@ export const askPdf = async (question: string) => {
   try {
     const model = new OpenAI({ maxTokens: 1000, temperature: 0.1 });
 
-    const loader = new CustomPDFLoader("lootheroes.pdf");
+    const loader = new CustomPDFLoader("loa_litepaper.pdf");
     const doc = await loader.load();
 
-    const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
+    const textSplitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 1000,
+    });
 
     const docs = await textSplitter.splitDocuments(doc);
 
-    const vectorStore = await HNSWLib.fromDocuments(docs, new OpenAIEmbeddings());
+    const vectorStore = await HNSWLib.fromDocuments(
+      docs,
+      new OpenAIEmbeddings()
+    );
     const qaChain = VectorDBQAChain.fromLLM(model, vectorStore);
 
-      const answer = await qaChain.call({
-        input_documents: docs,
-        query: "You are a helpful AI bot for Loot Heroes. " + question,
-      });
-      console.log(answer.text);
-      return answer.text;
-
-
+    const answer = await qaChain.call({
+      input_documents: docs,
+      query: "You are a helpful AI bot for Lands of Ascension. " + question,
+    });
+    console.log(answer.text);
+    return answer.text;
   } catch (e) {
-
-    console.log(e)
+    console.log(e);
   }
 };
 
